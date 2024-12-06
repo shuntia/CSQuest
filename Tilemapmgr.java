@@ -6,6 +6,7 @@ import javax.imageio.ImageIO;
 public class Tilemapmgr {
     static HashMap<String,Tilemap> tilemaps = new HashMap<>();
     public static final char[] tilechars = {' ','.','~','-','|','/'};
+    static boolean active = false;
     public static void loadFromImage(String name, String imagePath){
         try{
             // Load the image
@@ -127,7 +128,24 @@ public class Tilemapmgr {
         }
         return new RenderedMap(ret);
     }
+    public static RenderedMap draw(String name, int x, int y, int width, int height){
+        char[][] ret = new char[height][width];
+        int mapwidth = tilemaps.get(name).tileids.length, mapheight = tilemaps.get(name).tileids[0].length;
+        Tilemap map = tilemaps.get(name);
+        for(int ox=0;ox<width;ox++){
+            for(int oy=0;oy<height;oy++){
+                ret[oy][ox] = y+oy<mapheight && x+ox<mapwidth && x+ox>=0 && y+oy>=0? tilechars[map.tileids[y+oy][x+ox]] : ' ';
+            }
+        }
+        return new RenderedMap(ret);
+    }
     public static Tilemap getTilemap(String name){
         return tilemaps.get(name);
+    }
+    public static void activate(){
+        active = true;
+    }
+    public static void deactivate(){
+        active = false;
     }
 }
