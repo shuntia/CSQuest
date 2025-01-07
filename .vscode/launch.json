@@ -1,0 +1,22 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Graphicsmgr",
+            "request": "launch",
+            "mainClass": "Graphicsmgr",
+            "projectName": "CSQuest_b76dd44a"
+        },
+        {
+            "type": "java",
+            "name": "Launch Application",
+            "request": "launch",
+            "mainClass": "Main",
+            "vmArgs": "--module-path ${workspaceFolder}/javafx-sdk-23.0.1/lib --add-modules=javafx.controls,javafx.fxml",
+            "classPaths": [
+                "${workspaceFolder}/javafx-sdk-23.0.1/lib/*"
+            ]
+        }
+    ]
+}

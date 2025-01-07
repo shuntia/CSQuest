@@ -8,4 +8,7 @@ public class Position {
     public Position() {
         this(0, 0);
     }
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }

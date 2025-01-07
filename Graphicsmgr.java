@@ -1,68 +1,104 @@
-
+import javafx.application.Application;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
+import javafx.stage.Stage;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
-public class Graphicsmgr {
-    final boolean isGUI;
-    JPanel panel;
-    JFrame frame;
-    HashMap<String, javax.swing.JComponent> components = new HashMap<>();
-    public Graphicsmgr(boolean isGUI){
-        this.isGUI = isGUI;
+public class Graphicsmgr extends Application implements KeyResponsive {
+    private final boolean isGUI;
+    private Stage stage;
+    private BorderPane rootPane;
+    private final HashMap<String, javafx.scene.Node> components = new HashMap<>();
+    public Position position = new Position();
+    public BufferedImage UILayer, MapLayer, OverlayLayer, frameBuffer;
+    public static boolean ismap = true;
+    private int dx = 1; // Movement speed in x-direction
+    private int dy = 0; // Movement speed in y-direction
+
+    public Graphicsmgr() {
+        this.isGUI = true;
     }
-    public void makePanel(){
-        if(isGUI){
-            panel = new JPanel();
+
+    @Override
+    public void start(Stage primaryStage) {
+        this.stage = primaryStage;
+        makePane("Graphics Manager");
+        // Initialize frameBuffer or other layers as needed
+    }
+
+    public void makePane(String name) {
+        rootPane = new BorderPane();
+        rootPane.setPrefSize(800, 600);
+
+        Scene scene = new Scene(rootPane);
+        stage.setTitle(name);
+        stage.setScene(scene);
+        stage.show();
+
+        // Setup Input Manager
+        Inputmgr inputMgr = new Inputmgr();
+        inputMgr.addKeyResponsive(this);
+        scene.setOnKeyPressed(inputMgr);
+        scene.setOnKeyReleased(inputMgr);
+        scene.setOnKeyTyped(inputMgr);
+    }
+
+    public void move(int dx, int dy) {
+        position.x += dx;
+        position.y += dy;
+        updateGUI();
+    }
+
+    public void updateGUI() {
+        if (rootPane == null) {
+            throw new IllegalStateException("Pane is not properly initialized.");
         }
+
+        ImageView imageView = new ImageView(SwingFXUtils.toFXImage(frameBuffer, null));
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(rootPane.getWidth());
+        imageView.setFitHeight(rootPane.getHeight());
+
+        rootPane.setCenter(imageView);
     }
-    public void makePanel(String name){
-        if(isGUI){
-            panel = new JPanel();
-            frame = new JFrame(name);
-            frame.add(panel);
-        }
-    }
-    @Deprecated
-    public void makeTextArea(){
-        if(isGUI){
-            javax.swing.JTextArea textArea = new javax.swing.JTextArea();
-            textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 30));
-            components.put("textArea", textArea);
-            panel.add(textArea);
-        }
-    }
-    public void makeTextArea(String name){
-        if(isGUI){
-            javax.swing.JTextArea textArea = new javax.swing.JTextArea();
-            textArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 30));
-            components.put(name, textArea);
-            panel.add(textArea);
-        }
-    }
-    public JComponent getComponent(String name){
-        return components.get(name);
-    }
-    public void draw(){
-        if(isGUI){
-            drawGUI();
-        }else{
-            drawTUI();
-        }
-    }
-    private void drawGUI(){
-        System.out.println("Drawing GUI");
-    }
-    private void drawTUI(){
+
+    public void updateTUI() {
         components.forEach((k, v) -> {
-            if(v instanceof javax.swing.JTextArea textArea){
-                if(k.equals("tilemap")){
-                    RenderedMap rm = Tilemapmgr.draw("test", 0, 0, 10, 10);
-                    rm.overlay(new RenderedMap(2, 4, 'X'), 4, 5);
+            if (v instanceof TextArea textArea) {
+                if (k.equals("tilemap")) {
+                    RenderedCMap rm = Tilemapmgr.drawcmap("test", position.x, position.y, 10, 10);
+                    rm.overlay(new RenderedCMap(2, 4, 'X'), 4, 5);
                     textArea.setText(rm.toString());
-                };
+                }
             }
         });
+    }
+
+    @Override
+    public void keyTyped(javafx.scene.input.KeyEvent e) {
+        // Handle key typed events
+    }
+
+    @Override
+    public void keyPressed(javafx.scene.input.KeyEvent e) {
+        System.out.println("Key Pressed: " + e.getCode());
+        String keyName = e.getCode().toString();
+        Inputmgr.getKeys().add(keyName);
+        // Additional key pressed handling
+    }
+
+    @Override
+    public void keyReleased(javafx.scene.input.KeyEvent e) {
+        String keyName = e.getCode().toString();
+        Inputmgr.getKeys().remove(keyName);
+        // Additional key released handling
+    }
+
+    public static void main(String[] args) {
+        launch(args);
     }
 }

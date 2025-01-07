@@ -1,4 +1,8 @@
+
+import java.awt.Image;
+
 public class MapCharacter extends Character {
+    Image[] sprite;
     Location location;
     public MapCharacter(String name) {
         this.name = name;

@@ -1,12 +1,13 @@
-public class RenderedMap {
+public class RenderedCMap {
     char[][] map;
-    public RenderedMap(char[][] map){
+
+    public RenderedCMap(char[][] map){
         this.map = map;
     }
-    public RenderedMap(int width, int height){
+    public RenderedCMap(int width, int height){
         map = new char[width][height];
     }
-    public RenderedMap(int width, int height, char c){
+    public RenderedCMap(int width, int height, char c){
         map = new char[height][width];
         for(int x = 0; x < height; x++){
             for(int y = 0; y < width; y++){
@@ -14,7 +15,7 @@ public class RenderedMap {
             }
         }
     }
-    public void overlay(RenderedMap overlay){
+    public void overlay(RenderedCMap overlay){
         if(overlay.map.length != map.length || overlay.map[0].length != map[0].length){
             throw new IllegalArgumentException("Overlay must be the same size as the map. If you want to place it in a specific location, use the other overlay method.");
         }
@@ -26,7 +27,7 @@ public class RenderedMap {
             }
         }
     }
-    public void overlay(RenderedMap overlay, int x, int y){
+    public void overlay(RenderedCMap overlay, int x, int y){
         if(overlay.map.length + y > map.length || overlay.map[0].length + x > map[0].length){
             throw new IllegalArgumentException("Overlay must fit within the map.");
         }
